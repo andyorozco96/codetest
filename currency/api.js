@@ -1,6 +1,8 @@
 var rest = require('restler');
 var apiUrl = 'https://openexchangerates.org/api/historical/';
 var APP_ID = 'c45dde88452e4c8a8bc8eba812cb8eda';
+var moment = require('moment'); // require
+moment().format();
 
 var self = (module.exports = {
 	ver001: (data, res) => {
@@ -67,8 +69,15 @@ var self = (module.exports = {
 			return;
 		}
 
-		let isValidDate = Date.parse(data.date);
-		if (isNaN(isValidDate)) {
+		// let isValidDate = Date.parse(data.date);
+		// if (isNaN(isValidDate)) {
+		// 	self.sendResponse(res, 403, 'Not a valid date format. Please try mm/dd/yy');
+		// }
+		const dateFormat = 'YYYY-MM-DD';
+		const toDateFormat = moment(new Date(date)).format(dateFormat);
+		const boolean = moment(toDateFormat, dateFormat, true).isValid();
+
+		if (boolean) {
 			self.sendResponse(res, 403, 'Not a valid date format. Please try mm/dd/yy');
 		}
 
@@ -76,6 +85,8 @@ var self = (module.exports = {
 
 		// build the API call URL
 		var url = apiUrl + date + '.json?&symbols=' + symbols + '&app_id=' + APP_ID;
+
+		//var url = `${apiUrl}${date}.json?&symbols=${symbols}&app_id=${APP_ID}`;
 
 		console.log('Calling OpenExchangeRates API at: ', url);
 
